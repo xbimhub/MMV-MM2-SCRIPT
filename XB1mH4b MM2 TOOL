@@ -15,7 +15,7 @@ local LocalPlayer = Players.LocalPlayer
 -- CONFIG
 ----------------------------------------------------------------
 
-local PASSWORD = "XB1mH4b"
+local PASSWORD = "zernix"
 
 local shootBind = Enum.KeyCode.E
 local shootOffset = 2.8
