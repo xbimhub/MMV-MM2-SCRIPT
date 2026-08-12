@@ -1,7 +1,7 @@
 --// XB1mH4b Admin Panel
 --// LocalScript -> StarterPlayer > StarterPlayerScripts
 --// Universal supprimé
---// E = équipement du Gun + préparation d'une position de tir
+--// E = équipement du Gun + tir vers le Murderer
 --// Aucun spam automatique
 
 local Players = game:GetService("Players")
@@ -557,13 +557,22 @@ local function prepareMurdererShot()
 
 	local murderer = findMurderer()
 
-	if not murderer then
+	if not murderer or not murderer.Character then
 		return
 	end
 
+	-- Equipe automatiquement le Gun s'il est dans le Backpack.
+	-- S'il est déjà équipé, on le conserve.
 	local gun = equipGun()
 
 	if not gun then
+		return
+	end
+
+	local murdererHRP =
+		murderer.Character:FindFirstChild("HumanoidRootPart")
+
+	if not murdererHRP then
 		return
 	end
 
@@ -574,15 +583,46 @@ local function prepareMurdererShot()
 		return
 	end
 
+	local character = LocalPlayer.Character
+
+	if not character then
+		return
+	end
+
+	local rightHand =
+		character:FindFirstChild("RightHand")
+
+	if not rightHand then
+		return
+	end
+
+	-- Même logique que le bouton "Shoot murderer"
+	-- de ton ancien prototype.
+	local shootRemote =
+		gun:FindFirstChild("Shoot")
+
+	if not shootRemote then
+		return
+	end
+
+	if not shootRemote:IsA("RemoteEvent") then
+		return
+	end
+
+	local args = {
+		CFrame.new(rightHand.Position),
+		CFrame.new(predictedPosition)
+	}
+
+	-- UN SEUL TIR pour UNE pression sur E.
+	shootRemote:FireServer(unpack(args))
+
 	print(
-		"[XB1mH4b] Target:",
+		"[XB1mH4b] Shot:",
 		murderer.Name,
 		"Predicted position:",
 		predictedPosition
 	)
-
-	-- Le tir doit être effectué par ton système serveur
-	-- autorisé. Aucun FireServer de Gun.Shoot n'est exécuté ici.
 end
 
 ----------------------------------------------------------------
